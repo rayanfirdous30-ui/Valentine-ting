@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manja bbg</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<link rel="preload" as="image" href="./images/image2.gif">
+<link rel="preload" as="image" href="./images/image4.gif">
+
+
+  <style>
+    .gradient-background {
+  background-image:
+    linear-gradient(180deg, #ffd0e5 0%, #ffe8f2 36%, #ffffff 100%),
+    url("https://www.transparenttextures.com/patterns/diamond-upholstery.png");
+  min-height: 100vh;
+}
+
+    .bounce {
+      animation: bounce 2s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+
+<body class="gradient-background">
+  <main class="flex items-center justify-center h-screen">
+    <section class="flex flex-col items-center p-4 text-center">
+      <img
+        id="imageDisplay"
+        src="./images/image1.jpeg"
+        class="rounded-md h-[300px] object-cover"
+      />
+
+      <h1
+        id="valentineQuestion"
+        class="text-4xl font-bold italic text-[#bd1e59] my-4"
+      >
+        Miss Mittal jr will you be my valentine?
+      </h1>
+
+      <div
+        id="responseButtons"
+        class="flex gap-4 pt-5 items-center relative z-10"
+      >
+        <button
+          id="yesButton"
+          class="bounce inline-flex items-center justify-center rounded-md text-xl font-medium px-4 py-2 bg-green-500 text-white transition-all duration-300 hover:bg-green-400 min-h-12 min-w-[75px]"
+        >
+          Yes
+        </button>
+
+        <button
+          id="noButton"
+          class="inline-flex items-center justify-center rounded-md text-xl font-medium px-4 py-2 bg-red-500 text-white transition-colors hover:bg-red-700 h-12 min-w-[75px]"
+        >
+          No
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const yesButton = document.getElementById('yesButton');
+      const noButton = document.getElementById('noButton');
+      const imageDisplay = document.getElementById('imageDisplay');
+      const valentineQuestion = document.getElementById('valentineQuestion');
+      const responseButtons = document.getElementById('responseButtons');
+
+      const QUESTION_TEXTS = [
+        'Miss Mittal jr will you be my valentine?',
+        'Are you actually saying no?',
+        'Sharam ari h? ye leak krdunga',
+        'Hadd hai yrr, cute toh lgre h itne',
+        'Pehli date hi yaad karle yrr',
+        'maan hi ja meri jaan, ache lgte saath me',
+        'Chocolate Ice-Cream khila dunga yrr??',
+        'Formality thi ye, option nahi hai aapke pass'
+      ];
+
+      const IMAGE_PATHS = [
+        './images/image1.jpeg',
+        './images/image2.gif',
+        './images/image3.jpeg',
+        './images/image4.gif',
+        './images/image5.jpeg',
+        './images/image6.jpeg',
+        './images/image7.jpeg',
+        './images/image8.jpeg',
+        './images/image9.jpeg',
+      ];
+
+      let yesWidth = 80;
+      let yesHeight = 48;
+      let yesFontSize = 20;
+
+      const growYesButton = () => {
+        yesWidth += 40;
+        yesHeight += 20;
+        yesFontSize += 10;
+
+        yesButton.style.width = `${yesWidth}px`;
+        yesButton.style.height = `${yesHeight}px`;
+        yesButton.style.fontSize = `${yesFontSize}px`;
+      };
+
+
+      const MAX_ESCAPES = 5;
+      let escapeCount = 0;
+
+      const moveNoButton = () => {
+        if (escapeCount >= MAX_ESCAPES) return;
+        escapeCount++;
+
+        const rect = noButton.getBoundingClientRect();
+        const padding = 20;
+
+        const x = Math.random() * (window.innerWidth - rect.width - padding);
+        const y = Math.random() * (window.innerHeight - rect.height - padding);
+
+        noButton.style.position = 'fixed';
+        noButton.style.left = `${x}px`;
+        noButton.style.top = `${y}px`;
+      };
+
+      noButton.addEventListener('mouseenter', moveNoButton);
+      noButton.addEventListener('touchstart', moveNoButton);
+
+
+      const expandYesToFullscreen = () => {
+        document.body.style.overflow = 'hidden';
+
+        yesButton.style.position = 'fixed';
+        yesButton.style.top = 0;
+        yesButton.style.left = 0;
+        yesButton.style.width = '100vw';
+        yesButton.style.height = '100vh';
+        yesButton.style.borderRadius = '0';
+        yesButton.style.fontSize = '4rem';
+        yesButton.style.zIndex = 9999;
+        yesButton.textContent = 'Haan bolde yrr kitni mehnat karwayegi';
+      };
+
+      const shakeAndDisintegrate = (el) => {
+        let shakes = 0;
+
+        const shakeInterval = setInterval(() => {
+          el.style.transform =
+            `translate(${(Math.random() - 0.5) * 30}px, ${(Math.random() - 0.5) * 30}px)`;
+          shakes++;
+
+          if (shakes >= 25) {
+            clearInterval(shakeInterval);
+
+            let scale = 1;
+            let opacity = 1;
+
+            const fade = setInterval(() => {
+              scale -= 0.05;
+              opacity -= 0.05;
+
+              el.style.transform = `scale(${scale})`;
+              el.style.opacity = opacity;
+
+              if (opacity <= 0) {
+                clearInterval(fade);
+                el.remove();
+                expandYesToFullscreen();
+              }
+            }, 30);
+          }
+        }, 30);
+      };
+
+
+      let noClickCount = 0;
+
+      noButton.addEventListener('click', () => {
+        if (noClickCount === QUESTION_TEXTS.length - 1) {
+          shakeAndDisintegrate(noButton);
+          return;
+        }
+
+        noClickCount++;
+
+        imageDisplay.src = IMAGE_PATHS[noClickCount];
+        valentineQuestion.textContent = QUESTION_TEXTS[noClickCount];
+
+        growYesButton();
+      });
+
+
+      yesButton.addEventListener('click', () => {
+        imageDisplay.src = IMAGE_PATHS.at(-1);
+        valentineQuestion.textContent =
+          'Worth it. 10/10 would code for you again.';
+        responseButtons.style.display = 'none';
+
+        confetti({
+          particleCount: 120,
+          spread: 360,
+          colors: ['#ff69b4', '#ff1493', '#ff6b81']
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
